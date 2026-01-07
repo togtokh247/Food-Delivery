@@ -1,4 +1,6 @@
-import { Button } from "@/components/ui/button";
+"use client";
+
+import { useRouter } from "next/navigation";
 import { HandPlatter } from "lucide-react";
 import { Cards } from "./Cards";
 import { FooterSection } from "./FooterSection";
@@ -6,6 +8,8 @@ import { Lunch } from "./Lunch";
 import { Salad } from "./Salad";
 
 export const HeaderSection = () => {
+  const router = useRouter();
+
   return (
     <>
       <div className="h-16 bg-black flex items-center px-8 gap-4">
@@ -23,18 +27,19 @@ export const HeaderSection = () => {
           </div>
 
           <div className="flex items-center gap-6">
-            <Button
-              className="w-[75px] h-[36px] rounded-xl bg-red-500 text-white flex justify-center items-center"
-              style={{ backgroundColor: "red" }}
+            <div
+              onClick={() => router.push("/SignUp")}
+              className="w-[75px] h-[36px] rounded-xl bg-red-500 text-white flex items-center justify-center cursor-pointer hover:bg-red-700"
             >
-              <h1 className="font-semibold">Sign Up</h1>
-            </Button>
-            <Button
-              className="w-[75px] h-[36px] rounded-xl bg-white text-black flex justify-center items-center"
-              style={{ backgroundColor: "white" }}
+              Sign Up
+            </div>
+
+            <div
+              onClick={() => router.push("/Login")}
+              className="w-[75px] h-[36px] rounded-xl bg-white text-black flex items-center justify-center cursor-pointer hover:bg-gray-300"
             >
-              <h1 className="font-semibold">Log In</h1>
-            </Button>
+              Log In
+            </div>
           </div>
         </div>
       </div>
