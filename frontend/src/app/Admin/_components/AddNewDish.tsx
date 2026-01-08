@@ -126,7 +126,7 @@ export const AddNewDish = () => {
   };
 
   const onSubmit = async (values: FoodFormValues) => {
-    await api.post("/foods/create", {
+    await api.post("/food/create", {
       name: values.name,
       price: parseFloat(values.price),
       ingredients: values.ingredients,

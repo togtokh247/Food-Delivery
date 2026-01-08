@@ -7,14 +7,14 @@ import { FoodCard } from "./FoodCard";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/axios";
 
-const categories = [
-  { id: "1", name: "All Dishes", count: 19 },
-  { id: "2", name: "Breakfast", count: 2 },
-  { id: "3", name: "Lunch", count: 1 },
-  { id: "4", name: "Dinner", count: 8 },
-  { id: "5", name: "Dessert", count: 4 },
-  { id: "6", name: "Drinks", count: 4 },
-];
+// const categories = [
+//   { id: "1", name: "All Dishes", count: 19 },
+//   { id: "2", name: "Breakfast", count: 2 },
+//   { id: "3", name: "Lunch", count: 1 },
+//   { id: "4", name: "Dinner", count: 8 },
+//   { id: "5", name: "Dessert", count: 4 },
+//   { id: "6", name: "Drinks", count: 4 },
+// ];
 
 type Food = {
   _id: string;
@@ -33,7 +33,7 @@ export const Menu = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const { data } = await api.get<Food[]>("/foods");
+      const { data } = await api.get<Food[]>("/food");
       setFoods(data);
     };
 
@@ -45,7 +45,7 @@ export const Menu = () => {
         <div className="w-290 h-full bg-white rounded-lg space-y-4 px-4 pt-4 border border-gray-300">
           <h1 className="font-semibold text-xl">Dishes category</h1>
           <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
+            {/* {categories.map((category) => (
               <div
                 key={category.id}
                 className={`h-7 px-3 rounded-xl flex items-center gap-2 cursor-pointer border border-gray-300`}
@@ -55,7 +55,7 @@ export const Menu = () => {
                   {category.count}
                 </span>
               </div>
-            ))}
+            ))} */}
             <div className="w-7 h-7 flex justify-center items-center bg-red-500 text-white rounded-full">
               <Plus />
             </div>
