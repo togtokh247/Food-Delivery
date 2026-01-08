@@ -2,7 +2,10 @@
 
 import { Plus } from "lucide-react";
 import { AddNewDish } from "./AddNewDish";
-import { Salads } from "./Salad";
+import { Card } from "@/components/ui/card";
+import { FoodCard } from "./FoodCard";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/axios";
 
 const categories = [
   { id: "1", name: "All Dishes", count: 19 },
@@ -13,7 +16,29 @@ const categories = [
   { id: "6", name: "Drinks", count: 4 },
 ];
 
+type Food = {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  ingredients: string;
+  categoryIds: {
+    _id: string;
+    name: string;
+  }[];
+};
+
 export const Menu = () => {
+  const [foods, setFoods] = useState<Food[]>([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await api.get<Food[]>("/foods");
+      setFoods(data);
+    };
+
+    getData();
+  }, []);
   return (
     <>
       <div className="w-full h-[176px] flex justify-center pt-10">
@@ -43,13 +68,25 @@ export const Menu = () => {
           <div className="flex gap-3">
             <div className="w-[270px] h-[241px] bg-white border border-dashed border-red-500 rounded-lg flex items-center justify-center flex-col">
               <div className="rounded-full bg-red-500 w-10 h-10 flex items-center justify-center text-center">
-                <AddNewDish />
+                <Card className="grid grid-cols-5 gap-4 p-6">
+                  <AddNewDish />
+
+                  {foods.map((food) => (
+                    <FoodCard
+                      key={food._id}
+                      id={food._id}
+                      name={food.name}
+                      price={food.price}
+                      ingredients={food.ingredients}
+                      image={food.image}
+                    />
+                  ))}
+                </Card>
               </div>
               <div>
                 <h1>Add new dishes to Salad</h1>
               </div>
             </div>
-            <Salads />
           </div>
         </div>
       </div>

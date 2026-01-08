@@ -53,7 +53,7 @@ const foods: Food[] = [
 
 export const FoodCards = () => {
   return (
-    <div className="grid grid-cols-3 gap-6">
+    <div className="grid grid-cols-3 gap-3">
       {foods.map((food) => (
         <div
           key={food.id}
@@ -80,12 +80,8 @@ export const FoodCards = () => {
           </div>
 
           <div className="flex justify-between items-center">
-            <h1 className="text-red-500 text-lg font-semibold">
-              {food.title}
-            </h1>
-            <h1 className="text-black text-lg font-semibold">
-              ${food.price}
-            </h1>
+            <h1 className="text-red-500 text-lg font-semibold">{food.title}</h1>
+            <h1 className="text-black text-lg font-semibold">${food.price}</h1>
           </div>
 
           <p className="text-sm text-gray-700 line-clamp-2">

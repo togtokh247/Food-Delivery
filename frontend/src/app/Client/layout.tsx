@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { SheetSection } from "./_components/Sheet";
 
 import {
@@ -14,7 +15,6 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-
   return (
     <>
       <div className="h-16 bg-black flex items-center px-8">
@@ -50,6 +50,7 @@ export default function RootLayout({
 
         <div className="bg-red-500 flex items-center h-[92px] justify-center overflow-hidden relative">
           <div className="animate-marquee whitespace-nowrap flex gap-12 font-semibold text-2xl text-white">
+            <h1>Fresh fast delivered</h1>
             <h1>Fresh fast delivered</h1>
             <h1>Fresh fast delivered</h1>
             <h1>Fresh fast delivered</h1>
@@ -99,8 +100,12 @@ export default function RootLayout({
             <div>
               <h1 className="text-gray-500 text-xl">Follow Us</h1>
               <div className="text-white pt-10 gap-4 flex">
-                <FacebookIcon />
-                <InstagramIcon />
+                <Link href={"https://www.facebook.com/lafontanaub"}>
+                  <FacebookIcon />
+                </Link>
+                <Link href={"https://www.instagram.com/la.ulaanbaatar/"}>
+                  <InstagramIcon />
+                </Link>
               </div>
             </div>
           </div>
