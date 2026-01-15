@@ -1,10 +1,10 @@
 "use client";
 
 import { useContext, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { StepContext, StepContextType } from "../page";
+import { StepContext, StepContextTyoe } from "../page";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {

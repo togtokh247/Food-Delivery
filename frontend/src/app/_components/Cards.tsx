@@ -49,18 +49,20 @@ export const Cards = () => {
       {foods.map((food) => (
         <div
           key={food.id}
-          className="w-[398px] h-[342px] bg-white rounded-lg p-4 space-y-3"
+          className="w-[398px] h-[342px] bg-white rounded-lg p-4 space-y-3 shadow-sm hover:shadow-md transition"
         >
           <div className="relative">
             <img
               src={food.image}
+              alt={food.title}
               className="w-full h-[210px] rounded-lg object-cover"
             />
+
             <Popover>
-              <PopoverTrigger>
-                <div className="absolute bottom-3 right-3 w-11 h-11 bg-white rounded-full flex justify-center items-center text-red-500 cursor-pointer shadow">
+              <PopoverTrigger asChild>
+                <button className="absolute bottom-3 right-3 w-11 h-11 bg-white rounded-full flex justify-center items-center text-red-500 shadow hover:scale-105 transition">
                   <Plus />
-                </div>
+                </button>
               </PopoverTrigger>
 
               <PopoverContent className="w-[320px] p-4">
@@ -70,8 +72,12 @@ export const Cards = () => {
           </div>
 
           <div className="flex justify-between items-center">
-            <h1 className="text-red-500 text-lg font-semibold">{food.title}</h1>
-            <h1 className="text-black text-lg font-semibold">${food.price}</h1>
+            <h1 className="text-red-500 text-lg font-semibold">
+              {food.title}
+            </h1>
+            <h1 className="text-black text-lg font-semibold">
+              ${food.price.toFixed(2)}
+            </h1>
           </div>
 
           <p className="text-sm text-gray-700 line-clamp-2">

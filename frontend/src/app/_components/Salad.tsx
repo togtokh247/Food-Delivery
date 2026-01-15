@@ -67,7 +67,7 @@ export const Salad = () => {
             />
 
             <Popover>
-              <PopoverTrigger asChild>
+              <PopoverTrigger>
                 <div className="absolute bottom-3 right-3 w-11 h-11 bg-white rounded-full flex justify-center items-center text-red-500 cursor-pointer shadow">
                   <Plus />
                 </div>

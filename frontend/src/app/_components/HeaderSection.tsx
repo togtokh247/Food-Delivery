@@ -1,7 +1,12 @@
 "use client";
 
+<<<<<<< Updated upstream
 import { useRouter } from "next/navigation";
+=======
+>>>>>>> Stashed changes
 import { HandPlatter } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { Cards } from "./Cards";
 import { FooterSection } from "./FooterSection";
 import { Lunch } from "./Lunch";
@@ -12,20 +17,18 @@ export const HeaderSection = () => {
 
   return (
     <>
-      <div className="h-16 bg-black flex items-center px-8 gap-4">
-        <div className="flex items-center gap-3 w-full justify-between">
+      <div className="h-16 bg-black flex items-center px-8">
+        <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             <HandPlatter className="text-red-600 h-[46px] w-[38px]" />
-
             <div>
               <h1 className="text-2xl font-bold leading-none">
                 <span className="text-white">NOM</span>
                 <span className="text-red-500">NOM</span>
               </h1>
-              <p className="text-white text-s text-center">Swift delivery</p>
+              <p className="text-white text-sm text-center">Swift delivery</p>
             </div>
           </div>
-
           <div className="flex items-center gap-6">
             <div
               onClick={() => router.push("/SignUp")}
@@ -43,25 +46,32 @@ export const HeaderSection = () => {
           </div>
         </div>
       </div>
-      <div>
-        <img src="/Image.png" className="w-screen h-700px] object-cover" />
-      </div>
-      <div className="bg-gray-500 min-h-screen pl-20 pr-20">
-        <div className="flex justify-between items-center mb-4 w-[1200px] pt-20 pb-5">
+
+      <img
+        src="/Image.png"
+        className="w-screen h-[700px] object-cover"
+        alt="Food"
+      />
+
+      <div className="bg-gray-500 min-h-screen px-20">
+        <div className="pt-20 pb-5">
           <h1 className="text-2xl font-semibold text-white">Appetizers</h1>
         </div>
         <Cards />
-        <div className="flex justify-between items-center mb-4 w-[1200px] pt-20 pb-5">
+
+        <div className="pt-20 pb-5">
           <h1 className="text-2xl font-semibold text-white">Salads</h1>
         </div>
         <Salad />
-        <div className="flex justify-between items-center mb-4 w-[1200px] pt-20 pb-5">
+
+        <div className="pt-20 pb-5">
           <h1 className="text-2xl font-semibold text-white">Lunch favorites</h1>
         </div>
         <div className="pb-20">
           <Lunch />
         </div>
       </div>
+
       <FooterSection />
     </>
   );
