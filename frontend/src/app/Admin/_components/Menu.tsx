@@ -83,9 +83,6 @@ export const Menu = () => {
                   ))}
                 </Card>
               </div>
-              <div>
-                <h1>Add new dishes to Salad</h1>
-              </div>
             </div>
           </div>
         </div>

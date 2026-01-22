@@ -44,7 +44,7 @@ const foodFormSchema = z.object({
     },
     {
       message: "Price must be a valid positive number.",
-    }
+    },
   ),
   image: z.string().min(1, {
     message: "Image is required.",
@@ -83,7 +83,7 @@ export const AddNewDish = () => {
   });
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -96,7 +96,7 @@ export const AddNewDish = () => {
         {
           method: "POST",
           body: file,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -126,7 +126,7 @@ export const AddNewDish = () => {
   };
 
   const onSubmit = async (values: FoodFormValues) => {
-    await api.post("/food/create", {
+    await api.post("/foods/create", {
       name: values.name,
       price: parseFloat(values.price),
       ingredients: values.ingredients,
@@ -156,15 +156,12 @@ export const AddNewDish = () => {
       }}
     >
       <DialogTrigger asChild>
-        <button
-          type="button"
-          className="flex justify-center items-center text-white"
-        >
-          <Plus className="w-8 h-8" />
-        </button>
+        <Button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 text-2xl">
+          <Plus />
+        </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-150">
+      <DialogContent className="">
         <DialogHeader>
           <DialogTitle>Add new Dish</DialogTitle>
         </DialogHeader>
