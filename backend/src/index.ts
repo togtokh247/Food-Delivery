@@ -3,12 +3,14 @@ import { connectToDatabase } from "./database/index.js";
 import { FoodRouter } from "./routes/food.router.js";
 import { CategoryRouter } from "./routes/category.router.js";
 import { AuthRouter } from "./routes/auth.router.js";
+import cors from "cors";
 
 await connectToDatabase();
 
 const app = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.use("/foods", FoodRouter);
 app.use("/categories", CategoryRouter);
