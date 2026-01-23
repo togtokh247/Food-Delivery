@@ -57,7 +57,7 @@ export const FoodCards = () => {
       {foods.map((food) => (
         <div
           key={food.id}
-          className="w-[398px] h-[342px] bg-white rounded-lg p-4 space-y-3"
+          className="w-[398px] h-[342px] bg-white rounded-lg p-4 space-y-3 "
         >
           <div className="relative">
             <img

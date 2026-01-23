@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z
@@ -22,6 +23,8 @@ const formSchema = z.object({
 });
 
 export const SignUp1 = () => {
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -69,6 +72,7 @@ export const SignUp1 = () => {
                 />
                 <Button
                   type="submit"
+                  onClick={() => router.push("/CreatePass")}
                   // style={{ backgroundColor: "gray", width: "100%" }}
                   className="w-full"
                 >
@@ -76,7 +80,12 @@ export const SignUp1 = () => {
                 </Button>
                 <div className="flex justify-center gap-2">
                   <h1 className="text-gray-500">Already have an account?</h1>
-                  <h1 className="text-blue-500">Log in </h1>
+                  <h1
+                    onClick={() => router.push("/Login")}
+                    className="text-blue-500"
+                  >
+                    Log in{" "}
+                  </h1>
                 </div>
               </form>
             </Form>

@@ -11,9 +11,10 @@ const orderSchema = new Schema(
       },
     ],
     status: { type: String, required: true, default: "pending" },
-    totalPrice: { type: Number, required: true },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-export const orderModel = model(`Order`, orderSchema);
+export const OrderModel = model("Order", orderSchema);

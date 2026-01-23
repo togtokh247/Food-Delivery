@@ -8,7 +8,9 @@ const userSchema = new Schema(
     profileImage: { type: String, required: false },
     address: { type: String, required: false },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+  },
 );
 
-export const userModel = model(`User`, userSchema);
+export const UserModel = model("User", userSchema);
