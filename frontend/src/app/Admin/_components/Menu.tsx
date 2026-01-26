@@ -2,25 +2,50 @@
 
 import { Plus } from "lucide-react";
 import { AddNewDish } from "./AddNewDish";
-import { Salads } from "./Salad";
+import { Card } from "@/components/ui/card";
+import { FoodCard } from "./FoodCard";
+import { useEffect, useState } from "react";
+import { api } from "@/lib/axios";
 
-const categories = [
-  { id: "1", name: "All Dishes", count: 19 },
-  { id: "2", name: "Breakfast", count: 2 },
-  { id: "3", name: "Lunch", count: 1 },
-  { id: "4", name: "Dinner", count: 8 },
-  { id: "5", name: "Dessert", count: 4 },
-  { id: "6", name: "Drinks", count: 4 },
-];
+// const categories = [
+//   { id: "1", name: "All Dishes", count: 19 },
+//   { id: "2", name: "Breakfast", count: 2 },
+//   { id: "3", name: "Lunch", count: 1 },
+//   { id: "4", name: "Dinner", count: 8 },
+//   { id: "5", name: "Dessert", count: 4 },
+//   { id: "6", name: "Drinks", count: 4 },
+// ];
+
+type Food = {
+  _id: string;
+  name: string;
+  price: number;
+  image: string;
+  ingredients: string;
+  categoryIds: {
+    _id: string;
+    name: string;
+  }[];
+};
 
 export const Menu = () => {
+  const [foods, setFoods] = useState<Food[]>([]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const { data } = await api.get<Food[]>("/food");
+      setFoods(data);
+    };
+
+    getData();
+  }, []);
   return (
     <>
       <div className="w-full h-[176px] flex justify-center pt-10">
         <div className="w-290 h-full bg-white rounded-lg space-y-4 px-4 pt-4 border border-gray-300">
           <h1 className="font-semibold text-xl">Dishes category</h1>
           <div className="flex flex-wrap gap-2">
-            {categories.map((category) => (
+            {/* {categories.map((category) => (
               <div
                 key={category.id}
                 className={`h-7 px-3 rounded-xl flex items-center gap-2 cursor-pointer border border-gray-300`}
@@ -30,7 +55,7 @@ export const Menu = () => {
                   {category.count}
                 </span>
               </div>
-            ))}
+            ))} */}
             <div className="w-7 h-7 flex justify-center items-center bg-red-500 text-white rounded-full">
               <Plus />
             </div>
@@ -43,13 +68,22 @@ export const Menu = () => {
           <div className="flex gap-3">
             <div className="w-[270px] h-[241px] bg-white border border-dashed border-red-500 rounded-lg flex items-center justify-center flex-col">
               <div className="rounded-full bg-red-500 w-10 h-10 flex items-center justify-center text-center">
-                <AddNewDish />
-              </div>
-              <div>
-                <h1>Add new dishes to Salad</h1>
+                <Card className="grid grid-cols-5 gap-4 p-6">
+                  <AddNewDish />
+
+                  {foods.map((food) => (
+                    <FoodCard
+                      key={food._id}
+                      id={food._id}
+                      name={food.name}
+                      price={food.price}
+                      ingredients={food.ingredients}
+                      image={food.image}
+                    />
+                  ))}
+                </Card>
               </div>
             </div>
-            <Salads />
           </div>
         </div>
       </div>
