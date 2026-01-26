@@ -44,7 +44,7 @@ const foodFormSchema = z.object({
     },
     {
       message: "Price must be a valid positive number.",
-    },
+    }
   ),
   image: z.string().min(1, {
     message: "Image is required.",
@@ -64,7 +64,7 @@ type Category = {
   name: string;
 };
 
-export const AddNewDish = () => {
+export const CreateFoodDialog = () => {
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [isUploading, setIsUploading] = useState(false);
@@ -83,7 +83,7 @@ export const AddNewDish = () => {
   });
 
   const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>,
+    event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -96,7 +96,7 @@ export const AddNewDish = () => {
         {
           method: "POST",
           body: file,
-        },
+        }
       );
 
       if (!response.ok) {
@@ -156,12 +156,16 @@ export const AddNewDish = () => {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 text-2xl">
+        <Button
+          variant="outline"
+          className="w-full h-full flex flex-col gap-4 items-center justify-center p-4"
+        >
           <Plus />
+          Add New Dish
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="">
+      <DialogContent className="max-w-150">
         <DialogHeader>
           <DialogTitle>Add new Dish</DialogTitle>
         </DialogHeader>

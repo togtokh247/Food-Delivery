@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   newpassword: z
@@ -23,6 +24,7 @@ const formSchema = z.object({
 });
 
 export const CreateNewPassword = () => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {

@@ -9,11 +9,7 @@ export const login: RequestHandler = async (req, res) => {
 
   if (!user) return res.status(404).json({ message: "User not found" });
 
-<<<<<<< HEAD
   const { password: userPassword, ...rest } = user.toObject();
-=======
-  const { password: userPassword, ...rest } = user;
->>>>>>> f563bae (m)
 
   if (userPassword !== password)
     return res.status(401).json({ message: "Username or password is wrong" });

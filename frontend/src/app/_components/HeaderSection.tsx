@@ -1,9 +1,4 @@
 "use client";
-
-<<<<<<< Updated upstream
-import { useRouter } from "next/navigation";
-=======
->>>>>>> Stashed changes
 import { HandPlatter } from "lucide-react";
 import { useRouter } from "next/navigation";
 
