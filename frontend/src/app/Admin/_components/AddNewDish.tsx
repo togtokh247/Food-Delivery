@@ -141,6 +141,7 @@ export const AddNewDish = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       const { data } = await api.get<Category[]>("/categories");
+      console.log("Fetched categories:", data);
       setCategories(data);
     };
 
@@ -156,12 +157,16 @@ export const AddNewDish = () => {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="bg-red-500 rounded-full w-10 h-10 flex items-center justify-center hover:bg-red-600 text-2xl">
+        <Button
+          variant="outline"
+          className="w-full h-full flex flex-col gap-4 items-center justify-center p-4"
+        >
           <Plus />
+          Add New Dish
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="">
+      <DialogContent className="max-w-150">
         <DialogHeader>
           <DialogTitle>Add new Dish</DialogTitle>
         </DialogHeader>
