@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
 
     const { user, accessToken } = data;
     setUser(user);
-    router.push("/Client");
+    router.push("/");
   };
 
   const register = async (
