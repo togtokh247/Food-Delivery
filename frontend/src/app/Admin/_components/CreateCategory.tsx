@@ -54,8 +54,12 @@ export const CreateCategory = ({ onCreated }: Props) => {
   const onSubmit = async (values: FormValues) => {
     setSaving(true);
     try {
-      const res = await api.post("/categories", { name: values.name.trim() });
+      const res = await api.post("/categories/create", {
+        name: values.name.trim(),
+      });
+
       const created: Category = res.data?.category ?? res.data;
+
       onCreated?.(created);
       form.reset();
       setOpen(false);
