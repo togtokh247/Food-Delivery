@@ -5,10 +5,10 @@ import { CreateNewPassword } from "./_componentss/CreateNewPassword";
 import { ForgotPass } from "./_componentss/ForgotPass";
 import { LoginSection } from "./_componentss/LoginSection";
 import { Verify } from "./_componentss/Verify";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useState } from "react";
 import { createContext } from "react";
 
-type StepContextType = {
+export type StepContextType = {
   step: number;
   setStep: Dispatch<SetStateAction<number>>;
   data: Data;
@@ -24,39 +24,28 @@ export const StepContext = createContext<StepContextType>(
 export type Data = {
   email: string;
   password: string;
-}
+  newPassword: string;
+  confirmPassword: string;
+};
 
 const initValue = {
   email: "",
   password: "",
+  newPassword: "",
+  confirmPassword: "",
 };
 
 export default function Home() {
   const [step, setStep] = useState(1);
   const [data, setData] = useState<Data>(initValue);
-  const [isReady, setIsReady] = useState(false);
 
   const handleNext = () => {
     setStep((prev) => Math.min(prev + 1, 4));
   };
 
   const handleBack = () => {
-    setStep((prev) => Math.min(prev - 1, 1));
+    setStep((prev) => Math.max(prev - 1, 1));
   };
-
-  useEffect(() => {
-    const saved = localStorage.getItem("data");
-    const savedData = JSON.parse(saved ?? JSON.stringify(initValue));
-    setData({
-      ...savedData,
-      datepicker: new Date(savedData.datepicker),
-    });
-    setIsReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (isReady) localStorage.setItem("data", JSON.stringify(data));
-  }, [data, isReady]);
 
   return (
     <StepContext.Provider

@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,25 +13,56 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
+import { useContext, useState } from "react";
+import { StepContext, StepContextType } from "../page";
+import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
-const formSchema = z.object({
-  newpassword: z
-    .string()
-    .min(8, "Invalid email. Use a format like example@email.com."),
-  confirmpassword: z.string().min(8, "Incorrect password. Please try again."),
-});
+const formSchema = z
+  .object({
+    newPassword: z.string().min(8, "Password must be at least 8 characters."),
+    confirmPassword: z.string().min(8, "Confirm your password."),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match.",
+    path: ["confirmPassword"],
+  });
 
 export const CreateNewPassword = () => {
+  const { data, setData, setStep } = useContext(StepContext) as StepContextType;
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      newpassword: "",
-      confirmpassword: "",
+      newPassword: data.newPassword || "",
+      confirmPassword: data.confirmPassword || "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setError("");
+      setSuccess("");
+
+      await api.post("/auth/reset-password", {
+        email: data.email,
+        password: values.newPassword,
+      });
+
+      setData((prev) => ({
+        ...prev,
+        newPassword: values.newPassword,
+        confirmPassword: values.confirmPassword,
+      }));
+
+      setSuccess("Password updated. Please login with your new password.");
+      setTimeout(() => setStep(1), 900);
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message?: string }>;
+      setError(axiosError.response?.data?.message || "Could not reset password.");
+    }
   }
 
   return (
@@ -44,19 +74,22 @@ export const CreateNewPassword = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4 w-[416px] max-w-md"
             >
-              <div className="text-gray-500 w-9 h-9">
+              <button
+                type="button"
+                className="text-gray-500 w-9 h-9"
+                onClick={() => setStep(3)}
+              >
                 <ChevronLeftSquareIcon />
-              </div>
+              </button>
               <div>
                 <h1 className="font-semibold text-xl">Create new password</h1>
                 <p className="text-gray-500">
-                  Set a new password with a combination of letters and numbers
-                  for better security.
+                  Set a new password with letters and numbers.
                 </p>
               </div>
               <FormField
                 control={form.control}
-                name="newpassword"
+                name="newPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -72,7 +105,7 @@ export const CreateNewPassword = () => {
               />
               <FormField
                 control={form.control}
-                name="confirmpassword"
+                name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
@@ -86,11 +119,12 @@ export const CreateNewPassword = () => {
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                style={{ backgroundColor: "gray", width: "100%" }}
-              >
-                Create password
+
+              {error ? <p className="text-sm text-red-500">{error}</p> : null}
+              {success ? <p className="text-sm text-green-600">{success}</p> : null}
+
+              <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                {form.formState.isSubmitting ? "Saving..." : "Create password"}
               </Button>
             </form>
           </Form>
@@ -100,6 +134,7 @@ export const CreateNewPassword = () => {
           <img
             src="/delivery.png"
             className="w-[950px] h-[750px] object-cover rounded-md"
+            alt="delivery"
           />
         </div>
       </div>

@@ -3,8 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,7 +13,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
-import { Label } from "@radix-ui/react-label";
+import { useContext } from "react";
+import { StepContext, StepContextType } from "../page";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   email: z
@@ -24,15 +24,19 @@ const formSchema = z.object({
 });
 
 export const ForgotPass = () => {
+  const { data, setData, setStep } = useContext(StepContext) as StepContextType;
+  const router = useRouter();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "",
+      email: data.email || "",
     },
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    setData((prev) => ({ ...prev, email: values.email }));
+    setStep(3);
   }
 
   return (
@@ -44,13 +48,17 @@ export const ForgotPass = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4 w-[416px] max-w-md"
             >
-              <div className="text-gray-500 w-9 h-9">
+              <button
+                type="button"
+                className="text-gray-500 w-9 h-9"
+                onClick={() => setStep(1)}
+              >
                 <ChevronLeftSquareIcon />
-              </div>
+              </button>
               <div>
-                <h1 className="font-semibold text-xl">Reset your password </h1>
+                <h1 className="font-semibold text-xl">Reset your password</h1>
                 <p className="text-gray-500">
-                  Enter your email to receive a password reset link.
+                  Enter your email to continue.
                 </p>
               </div>
               <FormField
@@ -69,16 +77,19 @@ export const ForgotPass = () => {
                 )}
               />
 
-              <Button
-                type="submit"
-                // style={{ backgroundColor: "gray", width: "100%" }}
-                className="w-full"
-              >
-                Send Link
+              <Button type="submit" className="w-full">
+                Continue
               </Button>
+
               <div className="flex justify-center gap-2">
-                <h1 className="text-gray-500">Don't have an account?</h1>
-                <h1 className="text-blue-500">Sing up</h1>
+                <h1 className="text-gray-500">Don&apos;t have an account?</h1>
+                <button
+                  type="button"
+                  onClick={() => router.push("/SignUp")}
+                  className="text-blue-500"
+                >
+                  Sign up
+                </button>
               </div>
             </form>
           </Form>
@@ -88,6 +99,7 @@ export const ForgotPass = () => {
           <img
             src="/delivery.png"
             className="w-[950px] h-[750px] object-cover rounded-md"
+            alt="delivery"
           />
         </div>
       </div>

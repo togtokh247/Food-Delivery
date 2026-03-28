@@ -4,7 +4,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { useRouter } from "next/navigation";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -15,6 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
+import { useContext, useState } from "react";
+import { SignUpStepContext, SignUpStepContextType } from "../page";
+import { api } from "@/lib/axios";
+import { AxiosError } from "axios";
 
 const formSchema = z
   .object({
@@ -30,19 +33,39 @@ const formSchema = z
 
 export const CreatePass = () => {
   const router = useRouter();
+  const { data, setData, setStep } = useContext(
+    SignUpStepContext
+  ) as SignUpStepContextType;
+  const [error, setError] = useState("");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      newpassword: "",
-      confirmpassword: "",
+      newpassword: data.password || "",
+      confirmpassword: data.confirmPassword || "",
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    
-    router.push("/Login");
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    try {
+      setError("");
+      await api.post("/auth/register", {
+        username: data.username,
+        email: data.email,
+        password: values.newpassword,
+      });
+
+      setData((prev) => ({
+        ...prev,
+        password: values.newpassword,
+        confirmPassword: values.confirmpassword,
+      }));
+
+      router.push("/Login");
+    } catch (err: unknown) {
+      const axiosError = err as AxiosError<{ message?: string }>;
+      setError(axiosError.response?.data?.message || "Could not create account.");
+    }
   }
 
   return (
@@ -54,10 +77,13 @@ export const CreatePass = () => {
               onSubmit={form.handleSubmit(onSubmit)}
               className="space-y-4 w-[416px]"
             >
-              <ChevronLeftSquareIcon
-                onClick={() => router.back()}
+              <button
+                type="button"
+                onClick={() => setStep(1)}
                 className="w-9 h-9 text-gray-500 cursor-pointer hover:text-black transition"
-              />
+              >
+                <ChevronLeftSquareIcon />
+              </button>
 
               <div>
                 <h1 className="font-semibold text-xl">
@@ -102,22 +128,25 @@ export const CreatePass = () => {
                 )}
               />
 
+              {error ? <p className="text-sm text-red-500">{error}</p> : null}
+
               <Button
                 type="submit"
                 className="w-full bg-gray-500"
-                disabled={!form.formState.isValid}
+                disabled={form.formState.isSubmitting}
               >
-                Create password
+                {form.formState.isSubmitting ? "Creating..." : "Create password"}
               </Button>
 
               <div className="flex justify-center gap-2 text-sm">
                 <span className="text-gray-500">Already have an account?</span>
-                <span
+                <button
+                  type="button"
                   onClick={() => router.push("/Login")}
                   className="text-blue-500 cursor-pointer hover:underline"
                 >
                   Log in
-                </span>
+                </button>
               </div>
             </form>
           </Form>
