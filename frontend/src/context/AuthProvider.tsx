@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "@/lib/axios";
-import { createContext, useContext, useState, PropsWithChildren } from "react";
+import { createContext, useContext, useState, PropsWithChildren, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 type AuthContextType = {
@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const { data } = await api.post("auth/login", { username, password });
 
     const { user, accessToken } = data;
+    localStorage.setItem("accessToken", accessToken);
     setUser(user);
     router.push("/");
   };
@@ -42,6 +43,24 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   ) => {
     await api.post("auth/register", { username, email, password });
   };
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      const accessToken = localStorage.getItem("accessToken");
+      if (!accessToken) return;
+  
+      const { data } = await api.get<{ user: User }>("auth/me", {
+        headers: {
+          authorization: `Bearer ${accessToken}`,
+        },
+      });
+  
+      setUser(data.user);
+    };
+  
+    fetchMe();
+  }, []);
+  
 
   return (
     <AuthContext.Provider value={{ user, login, register }}>

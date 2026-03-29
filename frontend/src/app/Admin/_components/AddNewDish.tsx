@@ -220,13 +220,11 @@ export const AddNewDish = () => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {(Array.isArray(categories) ? categories : []).map(
-                        (category) => (
-                          <SelectItem key={category._id} value={category._id}>
-                            {category.name}
-                          </SelectItem>
-                        ),
-                      )}
+                      {categories.map((category) => (
+                        <SelectItem key={category._id} value={category._id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
