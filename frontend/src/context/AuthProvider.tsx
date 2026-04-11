@@ -1,7 +1,13 @@
 "use client";
 
 import { api } from "@/lib/axios";
-import { createContext, useContext, useState, PropsWithChildren, useEffect } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  PropsWithChildren,
+  useEffect,
+} from "react";
 import { useRouter } from "next/navigation";
 
 type AuthContextType = {
@@ -28,12 +34,12 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
   const router = useRouter();
 
   const login = async (username: string, password: string) => {
-    const { data } = await api.post("auth/login", { username, password });
+    const { data } = await api.post("/auth/login", { username, password });
 
     const { user, accessToken } = data;
     localStorage.setItem("accessToken", accessToken);
     setUser(user);
-    router.push("/");
+    router.push("/Client");
   };
 
   const register = async (
@@ -48,19 +54,24 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     const fetchMe = async () => {
       const accessToken = localStorage.getItem("accessToken");
       if (!accessToken) return;
-  
-      const { data } = await api.get<{ user: User }>("auth/me", {
-        headers: {
-          authorization: `Bearer ${accessToken}`,
-        },
-      });
-  
-      setUser(data.user);
+
+      try {
+        const { data } = await api.get<{ user: User }>("/auth/me", {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        });
+
+        setUser(data.user);
+      } catch {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("user");
+        setUser(null);
+      }
     };
-  
+
     fetchMe();
   }, []);
-  
 
   return (
     <AuthContext.Provider value={{ user, login, register }}>

@@ -64,7 +64,13 @@ export const CreatePass = () => {
       router.push("/Login");
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
-      setError(axiosError.response?.data?.message || "Could not create account.");
+      const message =
+        axiosError.response?.data?.message ||
+        (axiosError.request
+          ? "Could not reach the server. Please make sure the backend is running."
+          : "Could not create account.");
+
+      setError(message);
     }
   }
 

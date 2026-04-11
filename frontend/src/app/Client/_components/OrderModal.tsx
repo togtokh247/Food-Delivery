@@ -36,6 +36,7 @@ export const OrderSidebar = () => {
           <div className="flex gap-3 mb-3">
             <img
               src="/Food Image.png"
+              alt="Sunshine Stackers"
               className="w-16 h-16 rounded-lg object-cover"
             />
             <div className="flex-1">

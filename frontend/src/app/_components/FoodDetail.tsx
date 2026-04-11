@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
+import { useCart } from "@/context/cart-context";
 
 type Food = {
-  id: number;
+  id: string | number;
   title: string;
   price: number;
   description: string;
@@ -17,6 +18,22 @@ type Props = {
 
 export const FoodDetail = ({ food }: Props) => {
   const [quantity, setQuantity] = useState(1);
+  const { addToCart, setIsCartOpen } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(
+      {
+        id: food.id,
+        name: food.title,
+        price: food.price,
+        description: food.description,
+        image: food.image,
+      },
+      quantity,
+    );
+    setIsCartOpen(true);
+    setQuantity(1);
+  };
 
   return (
     <div className="space-y-4">
@@ -56,9 +73,7 @@ export const FoodDetail = ({ food }: Props) => {
       </div>
 
       <button
-        onClick={() => {
-          console.log("Added to cart:", food, quantity);
-        }}
+        onClick={handleAddToCart}
         className="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600"
       >
         Add to cart

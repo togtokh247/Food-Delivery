@@ -58,7 +58,7 @@ export const LoginSection = () => {
         localStorage.setItem("user", JSON.stringify(data.user));
       }
 
-      router.push("/");
+      router.push("/Client");
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
       setError(axiosError.response?.data?.message || "Login failed");

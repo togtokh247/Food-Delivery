@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ShoppingCart, ShoppingCartIcon, UserIcon, X } from "lucide-react";
+import { isAxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -11,76 +13,93 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-  image: string;
-};
+import { api } from "@/lib/axios";
+import { useCart } from "@/context/cart-context";
 
 export const SheetSection = () => {
-  const [cartOpen, setCartOpen] = useState(false);
+  const router = useRouter();
+  const {
+    cartItems,
+    clearCart,
+    getTotalItems,
+    getTotalPrice,
+    isCartOpen,
+    removeFromCart,
+    setIsCartOpen,
+    updateQuantity,
+  } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  const [checkoutSuccess, setCheckoutSuccess] = useState("");
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Sunshine Stackers",
-      price: 12.99,
-      quantity: 1,
-      image: "/Food Image.png",
-    },
-    {
-      id: 2,
-      name: "Sunshine Stackers",
-      price: 12.99,
-      quantity: 1,
-      image: "/Food Image.png",
-    },
-  ]);
-
-  const increaseQty = (id: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    );
+  const increaseQty = (id: string | number, quantity: number) => {
+    updateQuantity(id, quantity + 1);
   };
 
-  const decreaseQty = (id: number) => {
-    setCartItems(items =>
-      items.map(item =>
-        item.id === id && item.quantity > 1
-          ? { ...item, quantity: item.quantity - 1 }
-          : item
-      )
-    );
+  const decreaseQty = (id: string | number, quantity: number) => {
+    updateQuantity(id, quantity - 1);
   };
 
-  const removeItem = (id: number) => {
-    setCartItems(items => items.filter(item => item.id !== id));
-  };
-
-  const itemsTotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
+  const itemsTotal = getTotalPrice();
   const shipping = cartItems.length > 0 ? 0.99 : 0;
   const total = itemsTotal + shipping;
 
+  const handleCheckout = async () => {
+    setCheckoutError("");
+    setCheckoutSuccess("");
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      setCheckoutError("Please log in before checkout.");
+      router.push("/Login");
+      return;
+    }
+
+    const hasUnsavedFood = cartItems.some((item) => typeof item.id !== "string");
+    if (hasUnsavedFood) {
+      setCheckoutError("Only saved menu items can be checked out.");
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      await api.post(
+        "/orders",
+        {
+          items: cartItems.map((item) => ({
+            foodId: item.id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+        },
+        {
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+          },
+        },
+      );
+
+      clearCart();
+      setCheckoutSuccess("Order placed successfully.");
+    } catch (error) {
+      const message = isAxiosError<{ message?: string }>(error)
+        ? (error.response?.data?.message ?? "Checkout failed.")
+        : "Checkout failed.";
+      setCheckoutError(message);
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
   return (
     <div className="flex items-center gap-3">
-      <Sheet open={cartOpen} onOpenChange={setCartOpen}>
+      <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
         <SheetTrigger>
           <div className="relative w-9 h-9 rounded-full bg-white flex items-center justify-center cursor-pointer">
             <ShoppingCart />
-            {cartItems.length > 0 && (
+            {getTotalItems() > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                {cartItems.length}
+                {getTotalItems()}
               </span>
             )}
           </div>
@@ -96,6 +115,18 @@ export const SheetSection = () => {
             </SheetDescription>
           </SheetHeader>
           <div className="mt-4 space-y-4">
+            {checkoutSuccess ? (
+              <p className="rounded-md bg-green-50 px-3 py-2 text-sm text-green-700">
+                {checkoutSuccess}
+              </p>
+            ) : null}
+
+            {checkoutError ? (
+              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+                {checkoutError}
+              </p>
+            ) : null}
+
             {cartItems.length === 0 && (
               <p className="text-center text-gray-500">
                 Your cart is empty
@@ -110,6 +141,7 @@ export const SheetSection = () => {
                 <img
                   src={item.image}
                   className="w-16 h-16 rounded-lg object-cover"
+                  alt={item.name}
                 />
 
                 <div className="flex-1">
@@ -117,14 +149,14 @@ export const SheetSection = () => {
                     {item.name}
                   </h3>
                   <p className="text-xs text-gray-600">
-                    Fluffy pancakes stacked with fruits.
+                    {item.description}
                   </p>
 
                   <div className="flex gap-2 mt-2 items-center">
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => decreaseQty(item.id)}
+                      onClick={() => decreaseQty(item.id, item.quantity)}
                     >
                       -
                     </Button>
@@ -132,7 +164,7 @@ export const SheetSection = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => increaseQty(item.id)}
+                      onClick={() => increaseQty(item.id, item.quantity)}
                     >
                       +
                     </Button>
@@ -144,7 +176,7 @@ export const SheetSection = () => {
                     ${(item.price * item.quantity).toFixed(2)}
                   </p>
                   <button
-                    onClick={() => removeItem(item.id)}
+                    onClick={() => removeFromCart(item.id)}
                     className="text-red-500 mt-2"
                   >
                     <X size={16} />
@@ -173,8 +205,12 @@ export const SheetSection = () => {
                 <span>${total.toFixed(2)}</span>
               </div>
 
-              <Button className="w-full bg-red-500 text-white">
-                Checkout
+              <Button
+                className="w-full bg-red-500 text-white"
+                disabled={isCheckingOut}
+                onClick={handleCheckout}
+              >
+                {isCheckingOut ? "Checking out..." : "Checkout"}
               </Button>
             </div>
           )}

@@ -2,10 +2,8 @@
 
 import { Card } from "@/components/ui/card";
 import { Pencil } from "lucide-react";
-import { useState } from "react";
 
 type FoodCardProps = {
-  id: string;
   name: string;
   price: number;
   ingredients: string;
@@ -13,14 +11,11 @@ type FoodCardProps = {
 };
 
 export function FoodCard({
-  id,
   name,
   price,
   ingredients,
   image,
 }: FoodCardProps) {
-  const [open, setOpen] = useState(false);
-
   return (
     <>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -29,8 +24,8 @@ export function FoodCard({
 
           <button
             type="button"
-            onClick={() => setOpen(true)}
             className="absolute top-3 right-3 w-10 h-10 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 shadow-md"
+            aria-label={`Edit ${name}`}
           >
             <Pencil className="w-4 h-4 text-gray-600" />
           </button>

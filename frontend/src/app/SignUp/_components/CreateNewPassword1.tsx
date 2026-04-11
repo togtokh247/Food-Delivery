@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ChevronLeftSquareIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   newpassword: z
@@ -24,7 +23,6 @@ const formSchema = z.object({
 });
 
 export const CreateNewPassword = () => {
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -101,6 +99,7 @@ export const CreateNewPassword = () => {
         <div className="flex justify-end items-center h-screen w-1/2 pr-5">
           <img
             src="/delivery.png"
+            alt="Delivery"
             className="w-[950px] h-[750px] object-cover rounded-md"
           />
         </div>

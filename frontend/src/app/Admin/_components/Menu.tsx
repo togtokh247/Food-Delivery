@@ -12,38 +12,76 @@ type Food = {
   name: string;
   price: number;
   image: string;
-  ingredients: string;
+  ingredients: string[] | string;
   categoryIds: {
     _id: string;
     name: string;
   }[];
 };
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
+type CategoryResponse = {
+  categories: Category[];
+};
+
+const formatIngredients = (ingredients: Food["ingredients"]) => {
+  return Array.isArray(ingredients) ? ingredients.join(", ") : ingredients;
+};
+
 export const Menu = () => {
   const [foods, setFoods] = useState<Food[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    const getData = async () => {
-      const { data } = await api.get<Food[]>("/foods");
-      setFoods(data);
+    let isMounted = true;
+
+    const loadData = async () => {
+      const [{ data: foodsData }, { data: categoriesData }] = await Promise.all([
+        api.get<Food[]>("/foods"),
+        api.get<CategoryResponse>("/categories"),
+      ]);
+
+      if (!isMounted) {
+        return;
+      }
+
+      setFoods(foodsData);
+      setCategories(categoriesData.categories);
     };
 
-    getData();
+    void loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
+
+  const getFoods = async () => {
+    const { data } = await api.get<Food[]>("/foods");
+    setFoods(data);
+  };
+
+  const getCategories = async () => {
+    const { data } = await api.get<CategoryResponse>("/categories");
+    setCategories(data.categories);
+  };
 
   return (
     <main className="flex-1 p-8">
-      <CreateCategory />
+      <CreateCategory onCreated={getCategories} />
       <Card className="grid grid-cols-5 gap-4 p-6 pt-8 mt-4">
-        <AddNewDish />
+        <AddNewDish categories={categories} onCreated={getFoods} />
 
         {foods.map((food) => (
           <FoodCard
             key={food._id}
-            id={food._id}
             name={food.name}
             price={food.price}
-            ingredients={food.ingredients}
+            ingredients={formatIngredients(food.ingredients)}
             image={food.image}
           />
         ))}

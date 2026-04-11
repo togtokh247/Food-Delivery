@@ -1,5 +1,4 @@
 import {
-  Facebook,
   FacebookIcon,
   HandPlatter,
   InstagramIcon,

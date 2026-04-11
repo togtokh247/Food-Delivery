@@ -2,10 +2,8 @@
 import { HandPlatter } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { Cards } from "./Cards";
 import { FooterSection } from "./FooterSection";
-import { Lunch } from "./Lunch";
-import { Salad } from "./Salad";
+import { FoodSections } from "./FoodSections";
 
 export const HeaderSection = () => {
   const router = useRouter();
@@ -49,21 +47,8 @@ export const HeaderSection = () => {
       />
 
       <div className="bg-gray-500 min-h-screen px-20">
-        <div className="pt-20 pb-5">
-          <h1 className="text-2xl font-semibold text-white">Appetizers</h1>
-        </div>
-        <Cards />
-
-        <div className="pt-20 pb-5">
-          <h1 className="text-2xl font-semibold text-white">Salads</h1>
-        </div>
-        <Salad />
-
-        <div className="pt-20 pb-5">
-          <h1 className="text-2xl font-semibold text-white">Lunch favorites</h1>
-        </div>
         <div className="pb-20">
-          <Lunch />
+          <FoodSections />
         </div>
       </div>
 

@@ -30,8 +30,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { api } from "@/lib/axios";
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useRef, useState } from "react";
 
 const foodFormSchema = z.object({
   name: z.string().min(2, {
@@ -64,9 +63,13 @@ type Category = {
   name: string;
 };
 
-export const AddNewDish = () => {
+type Props = {
+  categories: Category[];
+  onCreated?: () => Promise<void> | void;
+};
+
+export const AddNewDish = ({ categories, onCreated }: Props) => {
   const [open, setOpen] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -129,24 +132,19 @@ export const AddNewDish = () => {
     await api.post("/foods/create", {
       name: values.name,
       price: parseFloat(values.price),
-      ingredients: values.ingredients,
+      ingredients: values.ingredients
+        .split(",")
+        .map((ingredient) => ingredient.trim())
+        .filter(Boolean),
       image: values.image,
       categoryIds: [values.categoryId],
     });
 
     form.reset();
     setUploadedImageUrl("");
+    setOpen(false);
+    await onCreated?.();
   };
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const { data } = await api.get<Category[]>("/categories");
-      console.log("Fetched categories:", data);
-      setCategories(data);
-    };
-
-    fetchCategories();
-  }, []);
 
   return (
     <Dialog
@@ -212,7 +210,7 @@ export const AddNewDish = () => {
                   <FormLabel>Category</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -268,11 +266,9 @@ export const AddNewDish = () => {
                       />
                       {uploadedImageUrl ? (
                         <div className="relative border-2 border-gray-300 rounded-lg overflow-hidden">
-                          <Image
+                          <img
                             src={uploadedImageUrl}
                             alt="Uploaded food"
-                            width={400}
-                            height={300}
                             className="w-full h-48 object-cover"
                           />
                           <button

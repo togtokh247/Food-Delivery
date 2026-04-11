@@ -17,6 +17,15 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     const buffer = await request.arrayBuffer();
 
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      const contentType = request.headers.get("content-type") ?? "image/png";
+      const base64 = Buffer.from(buffer).toString("base64");
+
+      return NextResponse.json({
+        url: `data:${contentType};base64,${base64}`,
+      });
+    }
+
     const blob = await put(filename, buffer, {
       access: "public",
       allowOverwrite: true,

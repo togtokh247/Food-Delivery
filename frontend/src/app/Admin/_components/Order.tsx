@@ -32,7 +32,11 @@ export const Order = () => {
         </PopoverTrigger>
         <PopoverContent className="w-[230px] flex justify-between text-center">
             <div className="flex gap-2 text-center ">
-              <img src="/food.png" className="w-8 h-8 object-cover" />
+              <img
+                src="/food.png"
+                alt="Ordered food"
+                className="w-8 h-8 object-cover"
+              />
               <div>Finger food</div>
             </div>
             <div>x1</div>
