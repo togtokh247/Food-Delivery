@@ -35,7 +35,7 @@ export default function RootLayout() {
             <LayoutDashboard className="w-5 h-5" />
             Food menu
           </div>
-
+{/* 
           <div
             onClick={() => setStep("order")}
             className={`flex items-center gap-2 px-2 py-2 rounded-md cursor-pointer
@@ -44,7 +44,7 @@ export default function RootLayout() {
           >
             <Truck className="w-6 h-6" />
             Orders
-          </div>
+          </div> */}
         </div>
       </div>
 

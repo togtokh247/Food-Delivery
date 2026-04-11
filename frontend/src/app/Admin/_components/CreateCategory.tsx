@@ -89,10 +89,11 @@ export const CreateCategory = ({ onCreated }: Props) => {
       <DialogTrigger asChild>
         <button
           type="button"
-          className="w-7 h-7 flex items-center justify-center rounded-full bg-red-500 text-white"
+          className="flex h-9 items-center justify-center gap-2 rounded-full bg-red-500 px-4 text-sm font-medium text-white hover:bg-red-600"
           aria-label="Add new category"
         >
           <Plus className="w-4 h-4" />
+          Add category
         </button>
       </DialogTrigger>
 
