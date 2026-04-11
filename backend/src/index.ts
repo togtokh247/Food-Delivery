@@ -10,14 +10,18 @@ import { config } from "./config.js";
 await connectToDatabase();
 
 const app = express();
+const apiRouter = express.Router();
 
 app.use(express.json());
 app.use(cors());
 
-app.use("/foods", FoodRouter);
-app.use("/categories", CategoryRouter);
-app.use("/auth", AuthRouter);
-app.use("/orders", orderRouter);
+apiRouter.use("/foods", FoodRouter);
+apiRouter.use("/categories", CategoryRouter);
+apiRouter.use("/auth", AuthRouter);
+apiRouter.use("/orders", orderRouter);
+
+app.use(apiRouter);
+app.use("/_backend", apiRouter);
 
 app.listen(config.port, () => {
   console.log(`Food delivery API listening on port ${config.port}`);
