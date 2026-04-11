@@ -21,6 +21,7 @@ apiRouter.use("/auth", AuthRouter);
 apiRouter.use("/orders", orderRouter);
 
 app.use(apiRouter);
+app.use("/_/backend", apiRouter);
 app.use("/_backend", apiRouter);
 
 app.listen(config.port, () => {
