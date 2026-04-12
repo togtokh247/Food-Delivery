@@ -15,10 +15,24 @@ const apiRouter = express.Router();
 app.use(express.json());
 app.use(cors());
 
+const healthResponse = {
+  status: "ok",
+  service: "food-delivery-api",
+  endpoints: ["/foods", "/categories", "/auth", "/orders"],
+};
+
 apiRouter.use("/foods", FoodRouter);
 apiRouter.use("/categories", CategoryRouter);
 apiRouter.use("/auth", AuthRouter);
 apiRouter.use("/orders", orderRouter);
+
+app.get("/", (_req, res) => {
+  res.status(200).json(healthResponse);
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json(healthResponse);
+});
 
 app.use(apiRouter);
 app.use("/_/backend", apiRouter);
