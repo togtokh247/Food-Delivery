@@ -13,7 +13,7 @@ type Food = {
   price: number;
   image: string;
   ingredients: string[] | string;
-  categoryIds: {
+  categoryIds?: {
     _id: string;
     name: string;
   }[];
@@ -26,10 +26,6 @@ type Category = {
 
 type CategoryResponse = {
   categories: Category[];
-};
-
-const formatIngredients = (ingredients: Food["ingredients"]) => {
-  return Array.isArray(ingredients) ? ingredients.join(", ") : ingredients;
 };
 
 export const Menu = () => {
@@ -169,10 +165,9 @@ export const Menu = () => {
                   {section.foods.map((food) => (
                     <FoodCard
                       key={`${section.category._id}-${food._id}`}
-                      name={food.name}
-                      price={food.price}
-                      ingredients={formatIngredients(food.ingredients)}
-                      image={food.image}
+                      food={food}
+                      categories={categories}
+                      onChanged={getFoods}
                     />
                   ))}
                 </div>
