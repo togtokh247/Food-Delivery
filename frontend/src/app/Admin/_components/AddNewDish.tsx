@@ -31,6 +31,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { api } from "@/lib/axios";
 import { useRef, useState } from "react";
+import { isAxiosError } from "axios";
+
+const uncategorizedValue = "uncategorized";
 
 const foodFormSchema = z.object({
   name: z.string().min(2, {
@@ -72,6 +75,7 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
   const [open, setOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<FoodFormValues>({
@@ -81,9 +85,12 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
       price: "",
       ingredients: "",
       image: "",
-      categoryId: "",
+      categoryId: uncategorizedValue,
     },
   });
+
+  const { isSubmitting } = form.formState;
+  const isBusy = isUploading || isSubmitting;
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
@@ -92,6 +99,7 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
     if (!file) return;
 
     setIsUploading(true);
+    setError(null);
 
     try {
       const response = await fetch(
@@ -103,18 +111,20 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
       );
 
       if (!response.ok) {
-        const error = await response.json();
-        console.error("Upload error:", error);
-        alert(`Upload failed: ${error.details || error.error}`);
+        const uploadError = await response.json();
+        console.error("Upload error:", uploadError);
+        setError(
+          `Upload failed: ${uploadError.details || uploadError.error}`
+        );
         return;
       }
 
       const blob = await response.json();
       setUploadedImageUrl(blob.url);
-      form.setValue("image", blob.url);
+      form.setValue("image", blob.url, { shouldValidate: true });
     } catch (error) {
       console.error("Upload failed:", error);
-      alert("Upload failed. Please try again.");
+      setError("Upload failed. Please try again.");
     } finally {
       setIsUploading(false);
     }
@@ -122,35 +132,57 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
 
   const removeImage = () => {
     setUploadedImageUrl("");
-    form.setValue("image", "");
+    form.setValue("image", "", { shouldValidate: true });
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   const onSubmit = async (values: FoodFormValues) => {
-    await api.post("/foods/create", {
-      name: values.name,
-      price: parseFloat(values.price),
-      ingredients: values.ingredients
-        .split(",")
-        .map((ingredient) => ingredient.trim())
-        .filter(Boolean),
-      image: values.image,
-      categoryIds: [values.categoryId],
-    });
+    setError(null);
 
-    form.reset();
-    setUploadedImageUrl("");
-    setOpen(false);
-    await onCreated?.();
+    try {
+      await api.post("/foods/create", {
+        name: values.name.trim(),
+        price: parseFloat(values.price),
+        ingredients: values.ingredients
+          .split(",")
+          .map((ingredient) => ingredient.trim())
+          .filter(Boolean),
+        image: values.image,
+        categoryIds:
+          values.categoryId === uncategorizedValue
+            ? []
+            : [values.categoryId],
+      });
+
+      form.reset({
+        name: "",
+        price: "",
+        ingredients: "",
+        image: "",
+        categoryId: uncategorizedValue,
+      });
+      setUploadedImageUrl("");
+      setOpen(false);
+      await onCreated?.();
+    } catch (error) {
+      const message = isAxiosError<{ message?: string }>(error)
+        ? error.response?.data?.message ?? "Could not add this dish."
+        : "Could not add this dish.";
+
+      setError(message);
+    }
   };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(open) => {
-        if (isUploading) return;
+        if (isBusy) return;
+        if (!open) {
+          setError(null);
+        }
         setOpen(open);
       }}
     >
@@ -173,6 +205,12 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4 py-4"
           >
+            {error && (
+              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-600">
+                {error}
+              </p>
+            )}
+
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -213,11 +251,14 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
                     value={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select a category" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
+                      <SelectItem value={uncategorizedValue}>
+                        Uncategorized
+                      </SelectItem>
                       {categories.map((category) => (
                         <SelectItem key={category._id} value={category._id}>
                           {category.name}
@@ -302,10 +343,10 @@ export const AddNewDish = ({ categories, onCreated }: Props) => {
             <div className="flex justify-end">
               <Button
                 type="submit"
-                disabled={isUploading}
+                disabled={isBusy}
                 className="bg-black text-white hover:bg-black/90"
               >
-                Add Dish
+                {isSubmitting ? "Adding..." : "Add Dish"}
               </Button>
             </div>
           </form>
